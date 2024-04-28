@@ -1,6 +1,8 @@
-package go_map
+package utils
 
-import "reflect"
+import (
+	"reflect"
+)
 
 // Equaler returns true if a and b are equal.
 // Uses reflect.DeepEqual to compare a and b.
