@@ -3,8 +3,8 @@ package hashmap
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/pietroagazzi/gohashlib/pkg/utils"
 	"hash/fnv"
-	"pietragazzi/go_map/pkg/utils"
 )
 
 // entry represents an item in the hash table.

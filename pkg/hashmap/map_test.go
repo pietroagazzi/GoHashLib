@@ -1,7 +1,7 @@
 package hashmap_test
 
 import (
-	"pietragazzi/go_map/pkg/hashmap"
+	"github.com/pietroagazzi/gohashlib/pkg/hashmap"
 	"testing"
 )
 
