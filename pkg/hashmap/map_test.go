@@ -160,3 +160,17 @@ func TestMap_Values(t *testing.T) {
 		t.Errorf("Expected length to be 4, got %d", len(values))
 	}
 }
+
+func TestMap_Clear(t *testing.T) {
+	m := hashmap.NewMap[int, string](2, 3)
+	m.Set(1, "one")
+	m.Set(2, "two")
+	m.Set(3, "three")
+	m.Set(4, "four")
+
+	m.Clear()
+
+	if m.Len() != 0 {
+		t.Errorf("Expected length to be 0, got %d", m.Len())
+	}
+}
