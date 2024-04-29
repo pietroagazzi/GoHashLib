@@ -9,31 +9,32 @@ type Set[T any] struct {
 	m hashmap.Map[T, bool]
 }
 
-func NewSet[T comparable]() *Set[T] {
+// NewSet creates a new set with the given size and threshold.
+func NewSet[T any](size int, threshold float32) *Set[T] {
 	return &Set[T]{
-		m: *hashmap.NewMap[T, bool](16, 0.75),
+		m: *hashmap.NewMap[T, bool](size, threshold),
 	}
 }
 
-func (s *Set[T]) Add(value T) {
-	s.m.Set(value, true)
-}
-
-func (s *Set[T]) AddAll(values ...T) {
-	for _, value := range values {
-		s.Add(value)
+// Add adds a value to the set.
+func (s *Set[T]) Add(values ...T) {
+	for _, v := range values {
+		s.m.Set(v, true)
 	}
 }
 
+// Contains checks if the set contains a value.
 func (s *Set[T]) Contains(value T) bool {
 	_, ok := s.m.Get(value)
 	return ok
 }
 
+// Remove removes a value from the set.
 func (s *Set[T]) Remove(value T) {
 	s.m.Delete(value)
 }
 
+// Any checks if any value in the set satisfies the callback.
 func (s *Set[T]) Any(callback func(T) bool) bool {
 	for value := range s.m.Iter() {
 		if callback(value.Key) {
@@ -43,6 +44,7 @@ func (s *Set[T]) Any(callback func(T) bool) bool {
 	return false
 }
 
+// All checks if all values in the set satisfy the callback.
 func (s *Set[T]) All(callback func(T) bool) bool {
 	for value := range s.m.Iter() {
 		if !callback(value.Key) {
@@ -52,18 +54,22 @@ func (s *Set[T]) All(callback func(T) bool) bool {
 	return true
 }
 
+// Size returns the size of the set.
 func (s *Set[T]) Size() int {
 	return s.m.Size()
 }
 
+// Len returns the length of the set.
 func (s *Set[T]) Len() int {
 	return s.m.Len()
 }
 
+// Clear removes all values from the set.
 func (s *Set[T]) Clear() {
 	s.m.Clear()
 }
 
+// Iter returns a channel that yields each value in the set.
 func (s *Set[T]) Iter() <-chan T {
 	ch := make(chan T)
 	go func() {
@@ -75,6 +81,7 @@ func (s *Set[T]) Iter() <-chan T {
 	return ch
 }
 
+// ToSlice returns a slice containing all values in the set.
 func (s *Set[T]) ToSlice() []T {
 	slice := make([]T, 0, s.Len())
 
@@ -85,6 +92,7 @@ func (s *Set[T]) ToSlice() []T {
 	return slice
 }
 
+// String returns a string representation of the set.
 func (s *Set[T]) String() string {
 	out := "{"
 
@@ -97,8 +105,4 @@ func (s *Set[T]) String() string {
 	}
 
 	return out + "}"
-}
-
-func (s *Set[T]) Inspector() *hashmap.Map[T, bool] {
-	return &s.m
 }
