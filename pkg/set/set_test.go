@@ -88,3 +88,14 @@ func TestSet_ToSlice(t *testing.T) {
 		t.Errorf("Expected ToSlice to return a slice containing all elements in the set")
 	}
 }
+
+func TestSet_String(t *testing.T) {
+	s := set.NewSet[int](2, 1)
+	s.Add(1, 2, 3, 4, 5)
+
+	s.Remove(3)
+
+	if s.String() != "{5, 4, 1, 2}" {
+		t.Errorf("Expected String to return a string representation of the set")
+	}
+}
