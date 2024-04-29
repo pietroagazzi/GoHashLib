@@ -10,7 +10,7 @@ type Set[T any] struct {
 }
 
 // NewSet creates a new set with the given size and threshold.
-func NewSet[T any](size int, threshold float32) *Set[T] {
+func NewSet[T any](size uint32, threshold float32) *Set[T] {
 	return &Set[T]{
 		m: *hashmap.NewMap[T, bool](size, threshold),
 	}
@@ -55,7 +55,7 @@ func (s *Set[T]) All(callback func(T) bool) bool {
 }
 
 // Size returns the size of the set.
-func (s *Set[T]) Size() int {
+func (s *Set[T]) Size() uint32 {
 	return s.m.Size()
 }
 

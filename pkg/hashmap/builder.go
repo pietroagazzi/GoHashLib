@@ -11,7 +11,7 @@ type Builder[K, V any] []*Entry[K, V]
 
 // Build returns the Map with all the entries.
 func (ht *Builder[K, V]) Build(threshold float32) *Map[K, V] {
-	m := NewMap[K, V](len(*ht), threshold)
+	m := NewMap[K, V](uint32(len(*ht)), threshold)
 
 	// Add all entries to the Map
 	for _, e := range *ht {

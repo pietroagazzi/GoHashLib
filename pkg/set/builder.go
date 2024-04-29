@@ -7,7 +7,7 @@ func (sb *Builder[K]) Add(items ...K) {
 }
 
 func (sb *Builder[K]) Build(threshold float32) *Set[K] {
-	s := NewSet[K](len(*sb), threshold)
+	s := NewSet[K](uint32(len(*sb)), threshold)
 
 	for _, item := range *sb {
 		s.Add(item)
