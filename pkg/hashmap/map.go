@@ -9,7 +9,7 @@ import (
 
 // entry represents an item in the hash table.
 // Use separate chaining to handle hash collisions.
-type entry[K any, V interface{}] struct {
+type entry[K, V any] struct {
 	Key   K
 	Value V
 
@@ -20,7 +20,7 @@ type entry[K any, V interface{}] struct {
 // Map represents a Map.
 // Use the hash collision resolution technique of separate chaining.
 // https://en.wikipedia.org/wiki/Hash_table#Separate_chaining
-type Map[K any, V interface{}] struct {
+type Map[K, V any] struct {
 	// size is the number of slots in the Map
 	size int
 	// data is a slice of pointers to slices of Items
@@ -33,7 +33,7 @@ type Map[K any, V interface{}] struct {
 }
 
 // NewMap returns a new Map with the given size and threshold.
-func NewMap[K comparable, V any](size int, threshold float64) *Map[K, V] {
+func NewMap[K, V any](size int, threshold float64) *Map[K, V] {
 	return &Map[K, V]{
 		size:      size,
 		data:      make([]*entry[K, V], size),
