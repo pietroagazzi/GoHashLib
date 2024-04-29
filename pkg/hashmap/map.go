@@ -9,7 +9,7 @@ import (
 
 // entry represents an item in the hash table.
 // Use separate chaining to handle hash collisions.
-type entry[K comparable, V interface{}] struct {
+type entry[K any, V interface{}] struct {
 	Key   K
 	Value V
 
@@ -20,7 +20,7 @@ type entry[K comparable, V interface{}] struct {
 // Map represents a Map.
 // Use the hash collision resolution technique of separate chaining.
 // https://en.wikipedia.org/wiki/Hash_table#Separate_chaining
-type Map[K comparable, V interface{}] struct {
+type Map[K any, V interface{}] struct {
 	// size is the number of slots in the Map
 	size int
 	// data is a slice of pointers to slices of Items
@@ -214,6 +214,11 @@ func (ht *Map[K, V]) Values() []V {
 	}
 
 	return values
+}
+
+// Clear removes all items from the Map.
+func (ht *Map[K, V]) Clear() {
+	ht.data = make([]*entry[K, V], ht.size)
 }
 
 // String returns a string representation of the Map.
