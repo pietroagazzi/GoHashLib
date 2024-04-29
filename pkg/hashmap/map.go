@@ -29,11 +29,11 @@ type Map[K, V any] struct {
 	// Threshold is the maximum load factor before resizing the hash table.
 	// Must be a value between zero and one.
 	// Usually set to 0.75.
-	Threshold float64
+	Threshold float32
 }
 
 // NewMap returns a new Map with the given size and threshold.
-func NewMap[K, V any](size int, threshold float64) *Map[K, V] {
+func NewMap[K, V any](size int, threshold float32) *Map[K, V] {
 	return &Map[K, V]{
 		size:      size,
 		data:      make([]*entry[K, V], size),
@@ -174,7 +174,7 @@ func (ht *Map[K, V]) Size() int {
 // LoadFactor returns the load factor of the Map.
 //
 // The load factor is: number of items / *number of slots*
-func (ht *Map[K, V]) LoadFactor() float64 { return float64(ht.Len()) / float64(ht.size) }
+func (ht *Map[K, V]) LoadFactor() float32 { return float32(ht.Len()) / float32(ht.size) }
 
 // Iter returns a channel that iterates over all items in the Map.
 func (ht *Map[K, V]) Iter() <-chan entry[K, V] {
