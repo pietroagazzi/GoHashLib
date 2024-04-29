@@ -22,7 +22,7 @@ type entry[K, V any] struct {
 // https://en.wikipedia.org/wiki/Hash_table#Separate_chaining
 type Map[K, V any] struct {
 	// size is the number of slots in the Map
-	size int
+	size uint32
 	// data is a slice of pointers to slices of Items
 	data []*entry[K, V]
 
@@ -33,7 +33,7 @@ type Map[K, V any] struct {
 }
 
 // NewMap returns a new Map with the given size and threshold.
-func NewMap[K, V any](size int, threshold float32) *Map[K, V] {
+func NewMap[K, V any](size uint32, threshold float32) *Map[K, V] {
 	return &Map[K, V]{
 		size:      size,
 		data:      make([]*entry[K, V], size),
@@ -47,7 +47,7 @@ func NewMap[K, V any](size int, threshold float32) *Map[K, V] {
 // https://planetmath.org/goodhashtableprimes suggests using prime numbers for the size of the hash table.
 // This helps reduce collisions and distribute the items more evenly.
 func (ht *Map[K, V]) Resize() {
-	ht.size = utils.NextPrime(ht.size * 2)
+	ht.size = uint32(utils.NextPrime(int(ht.size) * 2))
 	newData := make([]*entry[K, V], ht.size)
 
 	// Copy and rehash the items
@@ -74,7 +74,11 @@ func (ht *Map[K, V]) Index(value K) (index uint32, err error) {
 	h := fnv.New32a()
 	_, err = h.Write(b)
 
-	return h.Sum32() % uint32(ht.size), err
+	if ht.size == 0 {
+		return 0, err
+	}
+
+	return h.Sum32() % ht.size, err
 }
 
 // Set adds an item to the Map.
@@ -167,7 +171,7 @@ func (ht *Map[K, V]) Len() int {
 }
 
 // Size returns the size of the Map.
-func (ht *Map[K, V]) Size() int {
+func (ht *Map[K, V]) Size() uint32 {
 	return ht.size
 }
 
