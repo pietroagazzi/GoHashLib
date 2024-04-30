@@ -28,6 +28,16 @@ func TestMap_Resize(t *testing.T) {
 	}
 }
 
+func TestMap_Resize_SizeZero(t *testing.T) {
+	m := hashmap.NewMap[string, int](0, 10)
+
+	m.Resize()
+
+	if m.Size() != 2 {
+		t.Errorf("Size must be 2 after resize, got %d", m.Size())
+	}
+}
+
 func TestMap_Index(t *testing.T) {
 	m := hashmap.NewMap[interface{}, string](10, 0.75)
 
@@ -64,6 +74,21 @@ func TestMap_Set(t *testing.T) {
 
 	if m.Len() != 2 {
 		t.Errorf("Expected length to be 2, got %d", m.Len())
+	}
+}
+
+func TestMap_Set_SizeZero(t *testing.T) {
+	m := hashmap.NewMap[int, string](0, 2)
+
+	m.Set(1, "one")
+	m.Set(2, "two")
+
+	if m.Len() != 2 {
+		t.Errorf("Expected length to be 2, got %d", m.Len())
+	}
+
+	if m.Size() != 2 {
+		t.Errorf("Size must be 2 after resize, got %d", m.Size())
 	}
 }
 

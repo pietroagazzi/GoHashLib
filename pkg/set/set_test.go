@@ -23,6 +23,15 @@ func TestSet_Add_MultipleValues(t *testing.T) {
 	}
 }
 
+func TestSet_Add_SizeZero(t *testing.T) {
+	s := set.NewSet[int](0, 1)
+	s.Add(1)
+
+	if !s.Contains(1) {
+		t.Errorf("Expected set to contain 1 after adding")
+	}
+}
+
 func TestSet_Remove(t *testing.T) {
 	s := set.NewSet[int](2, 1)
 	s.Add(1)

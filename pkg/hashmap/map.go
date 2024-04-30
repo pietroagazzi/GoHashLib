@@ -47,8 +47,15 @@ func NewMap[K, V any](size uint32, threshold float32) *Map[K, V] {
 // https://planetmath.org/goodhashtableprimes suggests using prime numbers for the size of the hash table.
 // This helps reduce collisions and distribute the items more evenly.
 func (ht *Map[K, V]) Resize() {
+	// Find the next prime number after doubling the size
 	ht.size = uint32(utils.NextPrime(int(ht.size) * 2))
 	newData := make([]*entry[K, V], ht.size)
+
+	// If no items in the hash table, return
+	if ht.Len() == 0 {
+		ht.data = newData
+		return
+	}
 
 	// Copy and rehash the items
 	for entry := range ht.Iter() {
@@ -74,21 +81,23 @@ func (ht *Map[K, V]) Index(value K) (index uint32, err error) {
 	h := fnv.New32a()
 	_, err = h.Write(b)
 
-	if ht.size == 0 {
-		return 0, err
-	}
-
 	return h.Sum32() % ht.size, err
 }
 
 // Set adds an item to the Map.
 func (ht *Map[K, V]) Set(key K, value V) {
-	index, _ := ht.Index(key)
-	entry := &entry[K, V]{Key: key, Value: value}
+	// If the size is zero, create a new slice
+	if ht.size == 0 {
+		// Resize to 2 if the size is zero
+		ht.Resize()
+	}
 
-	// If the slot is empty, create a new slice and add the entry
+	index, _ := ht.Index(key)
+	newEntry := &entry[K, V]{Key: key, Value: value}
+
+	// If the slot is empty, create a new slice and add the newEntry
 	if ht.data[index] == nil {
-		ht.data[index] = entry
+		ht.data[index] = newEntry
 
 		// If the capacity is reached, resize the hash table
 		if ht.LoadFactor() >= ht.Threshold {
@@ -109,9 +118,9 @@ func (ht *Map[K, V]) Set(key K, value V) {
 		current = current.Next
 	}
 
-	// If the key does not exist, add the entry to the chain
-	entry.Next = ht.data[index]
-	ht.data[index] = entry
+	// If the key does not exist, add the newEntry to the chain
+	newEntry.Next = ht.data[index]
+	ht.data[index] = newEntry
 }
 
 // Get returns the value associated with the key.
