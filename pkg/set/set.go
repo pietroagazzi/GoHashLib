@@ -23,35 +23,9 @@ func (s *Set[T]) Add(values ...T) {
 	}
 }
 
-// Contains checks if the set contains a value.
-func (s *Set[T]) Contains(value T) bool {
-	_, ok := s.m.Get(value)
-	return ok
-}
-
 // Remove removes a value from the set.
 func (s *Set[T]) Remove(value T) {
 	s.m.Delete(value)
-}
-
-// Any checks if any value in the set satisfies the callback.
-func (s *Set[T]) Any(callback func(T) bool) bool {
-	for value := range s.m.Iter() {
-		if callback(value.Key) {
-			return true
-		}
-	}
-	return false
-}
-
-// All checks if all values in the set satisfy the callback.
-func (s *Set[T]) All(callback func(T) bool) bool {
-	for value := range s.m.Iter() {
-		if !callback(value.Key) {
-			return false
-		}
-	}
-	return true
 }
 
 // Size returns the size of the set.
@@ -69,42 +43,13 @@ func (s *Set[T]) Clear() {
 	s.m.Clear()
 }
 
-// Equal checks if two sets are equal.
-func (s *Set[T]) Equal(other *Set[T]) bool {
-	if s.Len() != other.Len() {
-		return false
-	}
-
+// Copy returns a copy of the set.
+func (s *Set[T]) Copy() *Set[T] {
+	copy := NewSet[T](s.m.Size(), s.m.Threshold)
 	for value := range s.m.Iter() {
-		if !other.Contains(value.Key) {
-			return false
-		}
+		copy.Add(value.Key)
 	}
-
-	return true
-}
-
-// Iter returns a channel that yields each value in the set.
-func (s *Set[T]) Iter() <-chan T {
-	ch := make(chan T)
-	go func() {
-		for value := range s.m.Iter() {
-			ch <- value.Key
-		}
-		close(ch)
-	}()
-	return ch
-}
-
-// ToSlice returns a slice containing all values in the set.
-func (s *Set[T]) ToSlice() []T {
-	slice := make([]T, 0, s.Len())
-
-	for value := range s.m.Iter() {
-		slice = append(slice, value.Key)
-	}
-
-	return slice
+	return copy
 }
 
 // String returns a string representation of the set.
