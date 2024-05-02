@@ -108,3 +108,27 @@ func TestSet_String(t *testing.T) {
 		t.Errorf("Expected String to return a string representation of the set")
 	}
 }
+
+func TestSet_Equal(t *testing.T) {
+	s1 := set.NewSet[int](2, 1)
+	s1.Add(1, 2, 3)
+
+	s2 := set.NewSet[int](2, 1)
+	s2.Add(2, 3, 1)
+
+	if !s1.Equal(s2) {
+		t.Errorf("Expected Equal to return true for equal sets")
+	}
+}
+
+func TestSet_Contains(t *testing.T) {
+	s1 := set.NewSet[int](2, 1)
+	s1.Add(1, 2, 3)
+
+	s2 := set.NewSet[any](2, 1)
+	s2.Add(1, s1, 3)
+
+	if !s2.Contains(s1) {
+		t.Errorf("Expected Contains to return true for set")
+	}
+}

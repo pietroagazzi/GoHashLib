@@ -7,16 +7,6 @@ import (
 	"hash/fnv"
 )
 
-// entry represents an item in the hash table.
-// Use separate chaining to handle hash collisions.
-type entry[K, V any] struct {
-	Key   K
-	Value V
-
-	// Next is a pointer to the next item in the chain
-	Next *entry[K, V]
-}
-
 // Map represents a Map.
 // Use the hash collision resolution technique of separate chaining.
 // https://en.wikipedia.org/wiki/Hash_table#Separate_chaining
@@ -43,11 +33,11 @@ func NewMap[K, V any](size uint32, threshold float32) *Map[K, V] {
 
 // Resize changes the size of the Map.
 //
-// The new size is calculated by doubling the current size and finding the next prime number.
+// The new size is calculated by doubling the current size and finding the Next prime number.
 // https://planetmath.org/goodhashtableprimes suggests using prime numbers for the size of the hash table.
 // This helps reduce collisions and distribute the items more evenly.
 func (ht *Map[K, V]) Resize() {
-	// Find the next prime number after doubling the size
+	// Find the Next prime number after doubling the size
 	ht.size = uint32(utils.NextPrime(int(ht.size) * 2))
 	newData := make([]*entry[K, V], ht.size)
 
@@ -232,6 +222,23 @@ func (ht *Map[K, V]) Values() []V {
 // Clear removes all items from the Map.
 func (ht *Map[K, V]) Clear() {
 	ht.data = make([]*entry[K, V], ht.size)
+}
+
+// Equal returns true if the Map is equal to another Map.
+func (ht *Map[K, V]) Equal(other *Map[K, V]) bool {
+	if ht.Len() != other.Len() {
+		return false
+	}
+
+	for i := range ht.Iter() {
+		value, ok := other.Get(i.Key)
+
+		if !ok || !utils.Equaler(value, i.Value) {
+			return false
+		}
+	}
+
+	return true
 }
 
 // String returns a string representation of the Map.

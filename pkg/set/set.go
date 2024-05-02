@@ -69,6 +69,21 @@ func (s *Set[T]) Clear() {
 	s.m.Clear()
 }
 
+// Equal checks if two sets are equal.
+func (s *Set[T]) Equal(other *Set[T]) bool {
+	if s.Len() != other.Len() {
+		return false
+	}
+
+	for value := range s.m.Iter() {
+		if !other.Contains(value.Key) {
+			return false
+		}
+	}
+
+	return true
+}
+
 // Iter returns a channel that yields each value in the set.
 func (s *Set[T]) Iter() <-chan T {
 	ch := make(chan T)
