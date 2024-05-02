@@ -158,34 +158,6 @@ func TestMap_Len(t *testing.T) {
 	}
 }
 
-func TestMap_Keys(t *testing.T) {
-	m := hashmap.NewMap[int, string](2, 3)
-	m.Set(1, "one")
-	m.Set(2, "two")
-	m.Set(3, "three")
-	m.Set(4, "four")
-
-	keys := m.Keys()
-
-	if len(keys) != 4 {
-		t.Errorf("Expected length to be 4, got %d", len(keys))
-	}
-}
-
-func TestMap_Values(t *testing.T) {
-	m := hashmap.NewMap[int, string](2, 3)
-	m.Set(1, "one")
-	m.Set(2, "two")
-	m.Set(3, "three")
-	m.Set(4, "four")
-
-	values := m.Values()
-
-	if len(values) != 4 {
-		t.Errorf("Expected length to be 4, got %d", len(values))
-	}
-}
-
 func TestMap_Clear(t *testing.T) {
 	m := hashmap.NewMap[int, string](2, 3)
 	m.Set(1, "one")
@@ -197,25 +169,5 @@ func TestMap_Clear(t *testing.T) {
 
 	if m.Len() != 0 {
 		t.Errorf("Expected length to be 0, got %d", m.Len())
-	}
-}
-
-func TestMap_Equal(t *testing.T) {
-	m1 := hashmap.NewMap[int, string](2, 3)
-	m1.Set(1, "one")
-	m1.Set(2, "two")
-
-	m2 := hashmap.NewMap[int, string](2, 3)
-	m2.Set(1, "one")
-	m2.Set(2, "two")
-
-	if !m1.Equal(m2) {
-		t.Errorf("Expected maps to be equal")
-	}
-
-	m2.Delete(1)
-
-	if m1.Equal(m2) {
-		t.Errorf("Expected maps to not be equal")
 	}
 }

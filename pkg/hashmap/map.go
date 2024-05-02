@@ -24,6 +24,23 @@ type Map[K, V any] struct {
 	Threshold float32
 }
 
+// Index returns the index of the slot in the hash table where the value should be stored.
+//
+// It uses Marshal to convert the value to a byte slice, then hashes the byte slice using FNV-1a.
+// The hash is then modded by the size of the hash table to get the index.
+func (ht *Map[K, V]) Index(value K) (index uint32, err error) {
+	b, err := json.Marshal(value)
+
+	if err != nil {
+		return 0, err
+	}
+
+	h := fnv.New32a()
+	_, err = h.Write(b)
+
+	return h.Sum32() % ht.size, err
+}
+
 // NewMap returns a new Map with the given size and threshold.
 func NewMap[K, V any](size uint32, threshold float32) *Map[K, V] {
 	return &Map[K, V]{
@@ -57,23 +74,6 @@ func (ht *Map[K, V]) Resize() {
 	}
 
 	ht.data = newData
-}
-
-// Index returns the index of the slot in the hash table where the value should be stored.
-//
-// It uses Marshal to convert the value to a byte slice, then hashes the byte slice using FNV-1a.
-// The hash is then modded by the size of the hash table to get the index.
-func (ht *Map[K, V]) Index(value K) (index uint32, err error) {
-	b, err := json.Marshal(value)
-
-	if err != nil {
-		return 0, err
-	}
-
-	h := fnv.New32a()
-	_, err = h.Write(b)
-
-	return h.Sum32() % ht.size, err
 }
 
 // Set adds an item to the Map.
@@ -181,66 +181,9 @@ func (ht *Map[K, V]) Size() uint32 {
 // The load factor is: number of items / *number of slots*
 func (ht *Map[K, V]) LoadFactor() float32 { return float32(ht.Len()) / float32(ht.size) }
 
-// Iter returns a channel that iterates over all items in the Map.
-func (ht *Map[K, V]) Iter() <-chan entry[K, V] {
-	ch := make(chan entry[K, V])
-
-	go func() {
-		for _, entry := range ht.data {
-			current := entry
-			for current != nil {
-				ch <- *current
-				current = current.Next
-			}
-		}
-		close(ch)
-	}()
-
-	return ch
-}
-
-// Keys return a slice of all keys in the Map.
-func (ht *Map[K, V]) Keys() []K {
-	keys := make([]K, 0)
-
-	for i := range ht.Iter() {
-		keys = append(keys, i.Key)
-	}
-
-	return keys
-}
-
-// Values return a slice of all values in the Map.
-func (ht *Map[K, V]) Values() []V {
-	values := make([]V, 0)
-
-	for i := range ht.Iter() {
-		values = append(values, i.Value)
-	}
-
-	return values
-}
-
 // Clear removes all items from the Map.
 func (ht *Map[K, V]) Clear() {
 	ht.data = make([]*entry[K, V], ht.size)
-}
-
-// Equal returns true if the Map is equal to another Map.
-func (ht *Map[K, V]) Equal(other *Map[K, V]) bool {
-	if ht.Len() != other.Len() {
-		return false
-	}
-
-	for i := range ht.Iter() {
-		value, ok := other.Get(i.Key)
-
-		if !ok || !utils.Equaler(value, i.Value) {
-			return false
-		}
-	}
-
-	return true
 }
 
 // String returns a string representation of the Map.
