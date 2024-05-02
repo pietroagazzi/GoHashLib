@@ -7,6 +7,8 @@ import (
 	"hash/fnv"
 )
 
+const DefaultThreshold = 0.75
+
 // Map represents a Map.
 // Use the hash collision resolution technique of separate chaining.
 // https://en.wikipedia.org/wiki/Hash_table#Separate_chaining
